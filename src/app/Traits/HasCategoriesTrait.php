@@ -39,4 +39,18 @@ trait HasCategoriesTrait
     {
         $this->categories()->sync($category_ids);
     }
+
+    public function scopeOfCategoryBySlug($query, $slug)
+    {
+        return $query->whereHas('categories', function ($q) use ($slug) {
+            $q->where('slug', $slug)->where('status', 1);
+        });
+    }
+
+    public function scopeOfCategoriesBySlug($query, $slugs)
+    {
+        return $query->whereHas('categories', function ($q) use ($slugs) {
+            $q->whereIn('slug', $slugs)->where('status', 1);
+        });
+    }
 }

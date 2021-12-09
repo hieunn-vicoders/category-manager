@@ -11,9 +11,14 @@
     - [Model and Transformer](#model-and-transformer)
     - [Auth middleware](#auth-middleware)
   - [Query functions provide](#query-functions-provide)
-    - [List of query functions](#list-of-query-functions)
-    - [Use](#use)
-    - [For example](#for-example)
+    - [Repository](#repository)
+        - [List of query functions](#list-of-query-functions)
+        - [Use](#use)
+        - [For example](#for-example)
+    - [Entity](#entity)
+        - [List of entity query functions](#list-of-entity-query-functions)
+        - [Use entity query function](#use-entity-query-function)
+        - [Entity query function example](#entity-query-function-example)
   - [View](#view)
   - [Routes](#routes)
 
@@ -144,7 +149,9 @@ Configure auth middleware in configuration file `config\category.php`
 
 ## Query functions provide
 
-### List of query functions
+### Repository
+
+#### List of query functions
 Get the list of categories of post type
 ```php
 public function getCategoriesQuery(array $where, $number = 10, $order_by ='order', $order = 'asc', $columns = ['*']);
@@ -159,7 +166,7 @@ public function getPostCategoriesQuery($post_id, array $where, $post_type = 'pos
 public function getPostCategoriesQueryPaginate($post_id, array $where, $post_type = 'posts', $number = 10, $order_by = 'order', $order = 'asc');
 // get the category list of a paginated article
 ```
-### Use
+#### Use
 
 At controller use `CategoryRepository` and add function `__construct`
 ```php
@@ -171,7 +178,8 @@ public function __construct(CategoryRepository $categoryRepo)
     $this->categoryRepo = $categoryRepo;
 }
 ```
-### For example
+#### For example
+
 ```php
 public function index() {
     $categories = $this->categoryRepo->getCategoriesQuery(['type'=>'knowledge'],0);
@@ -185,6 +193,77 @@ public function index() {
     ->getPostCategoriesQueryPaginate(45,['status'=>1]);
     // get the categories of posts id = 45 with pagination
 }
+```
+
+### Entity
+
+#### List of entity query functions
+
+Scope a query to only include categories of a given type.
+```php
+public function scopeOfType($query)
+```
+
+Scope a query to only include hot categories.
+```php
+public function scopeIsHot($query)
+```
+
+Scope a query to only include published categories.
+```php
+public function scopeIsPublished($query)
+```
+
+Scope a query to order categories by order column.
+```php
+public function scopeSortByOrder($query, $order = 'acs')
+```
+
+Scope a query to order categories by name column.
+```php
+public function scopeSortByName($query, $order = 'asc')
+```
+
+Scope a query to order categories by usage time. From hight to low.
+```php
+public function scopeMostUsed($query, $categoryable_type = null)
+```
+
+Scope a query to order categories by usage time. From low to hight.
+```php
+public function scopeLeastUsed($query, $categoryable_type = null)
+```
+
+#### Use entity query function
+
+Use Trait.
+```php
+namespace App\Model;
+
+use VCComponent\Laravel\Category\Traits\CategoryQueryTrait;
+
+class Category 
+{
+    use CategoryQueryTrait;
+    \\
+}
+```
+
+Extend `VCComponent\Laravel\Category\Entities\Category` Entity.
+```php
+namespace App\Model;
+
+use VCComponent\Laravel\Category\Entities\Category as BaseCategory;
+
+class Category extends BaseCategory
+{
+    \\
+}
+```
+
+#### Entity query function example
+```php
+$category = Category::ofType('posts')->isHot()->isPublished()->mostUsed()->pageinate(15);
 ```
 ## View
 

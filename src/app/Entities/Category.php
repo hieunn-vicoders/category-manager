@@ -10,11 +10,12 @@ use Prettus\Repository\Traits\TransformableTrait;
 use VCComponent\Laravel\Category\Contracts\CategoryManagement;
 use VCComponent\Laravel\Category\Contracts\CategorySchema;
 use VCComponent\Laravel\Category\Traits\CategoryManagementTrait;
+use VCComponent\Laravel\Category\Traits\CategoryQueryTrait;
 use VCComponent\Laravel\Category\Traits\CategorySchemaTrait;
 
 class Category extends Model implements Transformable, CategorySchema, CategoryManagement
 {
-    use TransformableTrait, CategorySchemaTrait, CategoryManagementTrait, Sluggable, SluggableScopeHelpers;
+    use TransformableTrait, CategorySchemaTrait, CategoryManagementTrait, Sluggable, SluggableScopeHelpers, CategoryQueryTrait;
 
     const STATUS_PENDING = 2;
     const STATUS_ACTIVE  = 1;
@@ -57,5 +58,10 @@ class Category extends Model implements Transformable, CategorySchema, CategoryM
     public function scopePublished($query)
     {
         return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function categoryables() 
+    {
+        return $this->hasMany(Categoryable::class);
     }
 }
