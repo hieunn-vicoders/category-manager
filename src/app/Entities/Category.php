@@ -31,7 +31,7 @@ class Category extends Model implements Transformable, CategorySchema, CategoryM
         'thumbnail',
     ];
 
-    public function sluggable()
+    public function sluggable():array
     {
         return [
             'slug' => [

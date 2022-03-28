@@ -16,12 +16,13 @@
         }
     },
     "require": {
-        "webpress/core": "^3.1",
-        "cviebrock/eloquent-sluggable": "7.0.1",
-        "doctrine/dbal": "v2.12.1"
+        "webpress/core": "@dev",
+        "cviebrock/eloquent-sluggable": "^9.0",
+        "doctrine/dbal": "^2.0",
+        "illuminate/auth": "^7.0|^8.0|^9.0"
     },
     "require-dev": {
-        "orchestra/testbench": "5.0.0"
+        "orchestra/testbench": "^5.0.0|^7.0"        
     },
     "prefer-stable": true,
     "extra": {
@@ -39,5 +40,11 @@
         "coverage": [
             "vendor/bin/phpunit --coverage-html coverages"
         ]
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../core"
+        }
+    ]
 }

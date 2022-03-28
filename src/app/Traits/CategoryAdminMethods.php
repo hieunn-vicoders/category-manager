@@ -24,7 +24,7 @@ trait CategoryAdminMethods
         $this->entity     = $repository->getEntity();
         $this->validator  = $validator;
 
-        if (config('category.auth_middleware')['admin']['middleware']) {
+        if (config('category.auth_middleware.admin.middleware') !== '') {
             $this->middleware(
                 config('category.auth_middleware')['admin']['middleware'],
                 ['except' => config('category.auth_middleware.admin.except')]
@@ -33,6 +33,7 @@ trait CategoryAdminMethods
         else {
             throw new Exception("Admin middleware configuration is required");
         }
+        
         if (isset(config('category.transformers')['category'])) {
             $this->transformer = config('category.transformers.category');
         } else {
@@ -108,7 +109,7 @@ trait CategoryAdminMethods
                 throw new PermissionDeniedException();
             }
         }
-        // dd($category);
+
         if ($request->has('includes')) {
             $transformer = new $this->transformer(explode(',', $request->get('includes')));
         } else {

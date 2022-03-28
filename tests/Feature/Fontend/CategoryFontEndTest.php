@@ -99,7 +99,7 @@ class CategoryFontEndTest extends TestCase
         $response = $this->call('DELETE', 'api/category-management/categories/' . $category['id']);
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
-        $this->assertDeleted('categories', $category);
+        $this->assertDatabaseMissing('categories', $category);
 
     }
     /**
@@ -166,7 +166,8 @@ class CategoryFontEndTest extends TestCase
         $data = ['item_ids' => $listIds, 'status' => 2];
 
         $response = $this->json('GET', 'api/category-management/categories/all');
-        $response->assertJsonFragment(['status' => '1']);
+
+        $response->assertJsonFragment(['status' => 1]);
 
         $response = $this->json('PUT', 'api/category-management/categories/status/bulk', $data);
 
@@ -174,7 +175,7 @@ class CategoryFontEndTest extends TestCase
         $response->assertJson(['success' => true]);
 
         $response = $this->json('GET', 'api/category-management/categories');
-        $response->assertJsonFragment(['status' => '2']);
+        $response->assertJsonFragment(['status' => 2]);
     }
     /**
      * @test

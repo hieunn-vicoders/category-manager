@@ -7,9 +7,6 @@ use Dingo\Api\Provider\LaravelServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use VCComponent\Laravel\Category\Providers\CategoryRouteProvider;
 use VCComponent\Laravel\Category\Providers\CategoryServiceProvider;
-use VCComponent\Laravel\User\Providers\UserComponentEventProvider;
-use VCComponent\Laravel\User\Providers\UserComponentProvider;
-use VCComponent\Laravel\User\Providers\UserComponentRouteProvider;
 
 class TestCase extends OrchestraTestCase
 {
@@ -27,12 +24,6 @@ class TestCase extends OrchestraTestCase
             CategoryRouteProvider::class,
             CategoryServiceProvider::class,
             ServiceProvider::class,
-            \Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
-            \Illuminate\Auth\AuthServiceProvider::class,
-            UserComponentEventProvider::class,
-            UserComponentProvider::class,
-            UserComponentRouteProvider::class,
-
         ];
     }
 
@@ -61,11 +52,18 @@ class TestCase extends OrchestraTestCase
             'database' => ':memory:',
             'prefix' => '',
         ]);
-        $app['config']->set('jwt.secret', '5jMwJkcDTUKlzcxEpdBRIbNIeJt1q5kmKWxa0QA2vlUEG6DRlxcgD7uErg51kbBl');
-        $app['config']->set('auth.providers.users.model', \VCComponent\Laravel\User\Entities\User::class);
-        $app['config']->set('user', ['namespace' => 'user-management']);
         $app['config']->set('repository.cache.enabled', false);
-
+        $app['config']->set('auth.defaults.guard', 'api');
+        $app['config']->set('auth.guards', [
+            'web' => [
+                'driver' => 'session',
+                'provider' => 'users',
+            ],   
+            'api' => [
+                'driver' => 'token',
+                'provider' => 'users',
+            ],
+        ]);
         $app['config']->set('category.namespace', 'category-management');
         $app['config']->set('category.models', [
             'category' => \VCComponent\Laravel\Category\Test\Stubs\Models\Category::class,
@@ -76,7 +74,7 @@ class TestCase extends OrchestraTestCase
         ]);
         $app['config']->set('category.auth_middleware', [
             'admin' => [
-                'middleware' => 'auth',
+                'middleware' => null,
                 'except' => [],
             ],
             'frontend' => [
@@ -126,7 +124,6 @@ class TestCase extends OrchestraTestCase
     {
         $response->assertStatus(422);
         $response->assertJson([
-            'message' => 'The given data was invalid.',
             "errors" => [
                 $field => [
                     $error_message,
